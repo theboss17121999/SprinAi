@@ -7,7 +7,9 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,16 @@ public class OllamaAiController {
 
     private final ChatClient chatClient;
     private final ChatMemory chatMemory = MessageWindowChatMemory.builder().build();
+
+    @Autowired
+    private EmbeddingModel embeddingModel;
+
+    @PostMapping("/embeddings")
+    public float[] testEmbedding(@RequestParam String text) {
+        float[] vector = embeddingModel.embed(text);
+        System.out.println("Embedding length: " + vector.length);
+        return vector;
+    }
 
     public OllamaAiController(OllamaChatModel chatModel) {
 
@@ -31,13 +43,22 @@ public class OllamaAiController {
     @GetMapping("/apiOllama/{message}")
     public ResponseEntity<String> getAnswer(@PathVariable String message) {
 
-        String response = chatClient.prompt()
+        ChatResponse response = chatClient.prompt()
                 .user(message)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "default"))
                 .call()
-                .content();
+                .chatResponse();
 
-        return ResponseEntity.ok(response);
+        System.out.println("Content: " +
+                response.getResult().getOutput().getText());
+
+        System.out.println("Metadata: " +
+                response.getMetadata()
+                        .getModel());
+
+        return ResponseEntity.ok(
+                response.getResult().getOutput().getText()
+        );
     }
 
     @PostMapping("/api/recommend")
