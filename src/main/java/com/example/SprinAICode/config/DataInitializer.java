@@ -7,6 +7,7 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 //import javax.swing.text.Document;
@@ -17,9 +18,24 @@ public class DataInitializer {
 
     @Autowired
     private VectorStore  vectorStore;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @PostConstruct
     public void initData(){
+
+        //remove this in case you have new data in produ=uctDetails.txt
+        //-------------------------------------------------
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM vector_store",
+                Integer.class
+        );
+
+        if (count != null && count > 0) {
+            return; // Already loaded
+        }
+        //------------------------------------------------
+
         TextReader textReader = new TextReader(new ClassPathResource("productDetails.txt"));
 
         TokenTextSplitter splitter = TokenTextSplitter.builder().build();
