@@ -1,4 +1,4 @@
-package com.example.SprinAICode;
+package com.example.SprinAICode.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;

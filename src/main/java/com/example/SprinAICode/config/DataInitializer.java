@@ -1,4 +1,4 @@
-package com.example.SprinAICode;
+package com.example.SprinAICode.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.ai.document.Document;
@@ -27,7 +27,7 @@ public class DataInitializer {
                 .withChunkSize(100)
                 .withMinChunkSizeChars(30)
                 .withMinChunkLengthToEmbed(5)
-                .withMaxNumChunks(300)
+                .withMaxNumChunks(500)
                 .build();
         List<Document> documents = splitter1.split(textReader.get());
 
