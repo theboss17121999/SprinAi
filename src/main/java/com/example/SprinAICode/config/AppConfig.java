@@ -17,6 +17,7 @@ public class AppConfig {
     @Bean
     public VectorStore vectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel embeddingModel) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
+//                .vectorTableName("vector_store1")
                 .dimensions(1536)
                 .distanceType(COSINE_DISTANCE)
                 .indexType(HNSW)
